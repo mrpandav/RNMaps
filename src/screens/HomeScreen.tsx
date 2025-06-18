@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -37,34 +37,39 @@ const NavBox: React.FC<NavBoxProps> = ({title, onPress}) => (
 //   navigation.navigate(screenName);
 // };
 
-const HomeScreen  = () => {
+const HomeScreen = () => {
   const user = auth().currentUser;
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleLogout = () => {
-  Alert.alert(
-    'Confirm Logout',
-    'Are you sure you want to log out?',
-    [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log Out',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await logout();
-            navigation.navigate('LoginScreen');  
-          } catch (error) {
-            console.error('Logout error:', error);
-            Alert.alert('Error', 'Failed to logout. Please try again.');
-          }
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              navigation.navigate('LoginScreen');
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to logout. Please try again.');
+            }
+          },
         },
-      },
-    ],
-    { cancelable: true },
+      ],
+      {cancelable: true},
+    );
+  };
+  const handleNavigate = useCallback(
+    (screenName: keyof RootStackParamList) => () => {
+      navigation.navigate(screenName);
+    },
+    [navigation]
   );
-};
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,23 +85,10 @@ const HomeScreen  = () => {
         </Text>
       </View>
 
-      <View style={styles.boxContainer}>
-        <NavBox
-          title="Share"
-          onPress={navigation.navigate.bind(this, 'ShareScreen')}
-        />
-        {/* //! Use bind */}
-        <NavBox
-          title="View"
-          onPress={navigation.navigate.bind(this, 'ViewScreen')}
-        />
-        {/* //! Use bind */}
-        <NavBox
-          title="Route"
-          // onPress={handleNavigate.bind(this, navigation, 'RouteScreen')}
-          onPress={navigation.navigate.bind(this, 'RouteScreen')}
-        />
-        {/* //! Use bind */}
+        <View style={styles.boxContainer}>
+        <NavBox title="Share" onPress={handleNavigate('ShareScreen')} />
+        <NavBox title="View" onPress={handleNavigate('ViewScreen')} />
+        <NavBox title="Route" onPress={handleNavigate('RouteScreen')} />
       </View>
 
       <View style={styles.footer}>
@@ -109,9 +101,9 @@ const HomeScreen  = () => {
 };
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    margin:50,
+  container: {
+    flex: 1,
+    margin: 50,
   },
   header: {
     fontSize: 28,

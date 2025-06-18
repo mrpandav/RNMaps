@@ -129,35 +129,36 @@ const UserRoutesScreen = ({route}: UserRoutesScreenProps) => {
     };
   }, [selectedRoute]);
 
-  const renderRouteItem = (routeItem: Route, index: number) => {
-    const isMostRecent = index === 0;
-    const isLive =
-      isMostRecent && (routeItem.path?.length ?? 0) > 0 && routeItem.isActive;
+const renderRouteItem = (routeItem: Route, index: number) => {
+  const isMostRecent = index === 0;
+  const isLive =
+    isMostRecent && (routeItem.path?.length ?? 0) > 0 && routeItem.isActive;
 
-    return (
-      <TouchableOpacity
-        key={routeItem.id}
-        style={commonStyles.routeItem}
-        onPress={handleSelectRoute.bind(this,index)}>
-          //! proper bind remove getRoutePressHandler and directly use handleSelectRoute
-        <Text style={commonStyles.routeName}>
-          {routeItem.name || 'Unnamed Route'}
-        </Text>
-        <Text style={commonStyles.timestamp}>
-          {routeItem.startedAt?.toDate().toLocaleString() ?? 'Unknown time'}
-        </Text>
-        <Text style={commonStyles.timestamp}>
-          {routeItem.path?.length || 0} points recorded
-        </Text>
+  return (
+    <TouchableOpacity
+      key={routeItem.id}
+      style={commonStyles.routeItem}
+      onPress={() => navigation.navigate('RouteDetail', { userEmail, routeId: routeItem.id })} // Updated navigation
+    >
+      <Text style={commonStyles.routeName}>
+        {routeItem.name || 'Unnamed Route'}
+      </Text>
+      <Text style={commonStyles.timestamp}>
+        {routeItem.startedAt?.toDate().toLocaleString() ?? 'Unknown time'}
+      </Text>
+      <Text style={commonStyles.timestamp}>
+        {routeItem.path?.length || 0} points recorded
+      </Text>
 
-        {isLive && (
-          <View style={styles.liveTag}>
-            <Text style={styles.liveText}>Live</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
+      {isLive && (
+        <View style={styles.liveTag}>
+          <Text style={styles.liveText}>Live</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 
   // const getRoutePressHandler = (index: number) => () => {
   //   handleSelectRoute(index);

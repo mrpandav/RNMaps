@@ -84,7 +84,7 @@ const LoginScreen = () => {
         value={email}
         autoCapitalize="none"
         keyboardType="email-address"
-      />a
+      />
 
       <View style={commonStyles.passwordContainer}>
         <TextInput

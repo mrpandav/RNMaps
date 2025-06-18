@@ -12,6 +12,8 @@ import UserRoutesScreen from './src/screens/UserRoutesScreen';
 
 import {hideSplash} from 'react-native-splash-view';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import RouteDetailScreen from './src/screens/RouteDetail';
+import RouteDetail from './src/screens/RouteDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,9 +60,10 @@ const App = () => {
         />
 
         <Stack.Screen name="RouteScreen" component={RouteScreen} />
+        <Stack.Screen name="RouteDetail" component={RouteDetail} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
+//RouteDetailScreen
 export default App;

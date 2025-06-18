@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState, useRef, useMemo} from 'react';
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import {
   Text,
   View,
@@ -9,12 +9,12 @@ import {
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-import MapView, {Polyline, Marker, Region} from 'react-native-maps';
+import MapView, { Polyline, Marker, Region } from 'react-native-maps';
 import auth from '@react-native-firebase/auth';
-import firestore, {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import Geolocation from '@react-native-community/geolocation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {commonStyles} from '../styles/commonStyles';
+import { commonStyles } from '../styles/commonStyles';
 import {
   distanceFilter,
   fastestInterval,
@@ -22,14 +22,14 @@ import {
   LATITUDE_DELTA_DEFAULT,
   LONGITUDE_DELTA_DEFAULT,
 } from '../components/constant';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Route {
   id: string;
   name?: string;
   startedAt?: FirebaseFirestoreTypes.Timestamp;
-  path?: {latitude: number; longitude: number}[];
-   isActive?: boolean; 
+  path?: { latitude: number; longitude: number }[];
+  isActive?: boolean;
 }
 
 interface LiveLocation {
@@ -43,11 +43,10 @@ interface RouteItemProps {
   isLive: boolean;
 }
 
-const RouteItem: React.FC<RouteItemProps> = ({item, onPress, isLive}) => {
-   
+const RouteItem: React.FC<RouteItemProps> = ({ item, onPress, isLive }) => {
   return (
-    <TouchableOpacity style={commonStyles.routeItem} onPress={onPress.bind(this,item)}>
-      //! inline, bind
+    <TouchableOpacity style={commonStyles.routeItem} onPress={onPress.bind(this, item)}>
+      {/* //! inline, bind */}
       <Text style={commonStyles.routeName}>{item.name || 'Unnamed Route'}</Text>
       <Text style={commonStyles.timestamp}>
         {item.startedAt?.toDate().toLocaleString() ?? 'Unknown time'}
@@ -73,12 +72,12 @@ const RouteScreen = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const locationWatchId = useRef<number | null>(null);
 
- const isLiveRoute = (route: Route): boolean => {
-  // return !!route.isActive && !!liveLocation;
-  return route.isActive === true;
-};
+  const isLiveRoute = (route: Route): boolean => {
+    // return !!route.isActive && !!liveLocation;
+    return route.isActive === true;
+  };
 
-  const BackButton: React.FC<{onPress: () => void}> = ({onPress}) => (
+  const BackButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
     <TouchableOpacity style={commonStyles.backButton} onPress={onPress}>
       <Ionicons name="arrow-back" size={35} color="#007bff" />
     </TouchableOpacity>
@@ -144,11 +143,15 @@ const RouteScreen = () => {
     }
   };
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   const startWatchingLocation = () => {
     locationWatchId.current = Geolocation.watchPosition(
       async position => {
-        const {latitude, longitude} = position.coords;
-        setLiveLocation({latitude, longitude});
+        const { latitude, longitude } = position.coords;
+        setLiveLocation({ latitude, longitude });
 
         const user = auth().currentUser;
         if (!user) return;
@@ -159,10 +162,10 @@ const RouteScreen = () => {
             .doc(user.email || '')
             .set(
               {
-                liveLocation: {latitude, longitude},
+                liveLocation: { latitude, longitude },
                 lastUpdated: firestore.FieldValue.serverTimestamp(),
               },
-              {merge: true},
+              { merge: true },
             );
         } catch (error) {
           console.warn('Error updating live location:', error);
@@ -174,7 +177,7 @@ const RouteScreen = () => {
       {
         enableHighAccuracy: true,
         // distanceFilter: 10,
-         distanceFilter: distanceFilter,
+        distanceFilter: distanceFilter,
         //!const
         interval,
         fastestInterval,
@@ -187,7 +190,7 @@ const RouteScreen = () => {
   ) => {
     const routeList: Route[] = [];
     querySnapshot.forEach(doc => {
-      routeList.push({id: doc.id, ...doc.data()} as Route);
+      routeList.push({ id: doc.id, ...doc.data() } as Route);
     });
 
     const sorted = [...routeList].sort((a, b) => {
@@ -226,7 +229,7 @@ const RouteScreen = () => {
 
   const handleRouteSelect = useCallback((route: Route) => {
     if (isLiveRoute(route)) {
-      navigation.navigate('ShareScreen', {routeData: route});
+      navigation.navigate('ShareScreen', { routeData: route });
     } else {
       setSelectedRoute(route);
     }
@@ -282,14 +285,14 @@ const RouteScreen = () => {
     //   filteredPath.push(liveLocation);
     // }
     if (selectedRoute?.isActive && liveLocation) {
-  filteredPath.push(liveLocation);
-}
+      filteredPath.push(liveLocation);
+    }
 
     return filteredPath;
   }, [selectedRoute, liveLocation]);
 
   const renderRouteItem = useCallback(
-    ({item}: {item: Route}) => (
+    ({ item }: { item: Route }) => (
       <RouteItem
         item={item}
         onPress={handleRouteSelect}
@@ -334,8 +337,8 @@ const RouteScreen = () => {
   return (
     <View style={commonStyles.container}>
       <View style={commonStyles.topBar}>
-        <BackButton onPress={navigation.goBack.bind(this)} />
-          //! inline
+        <BackButton onPress={navigation.goBack} />
+        {/* //! inline */}
         <Text style={commonStyles.title}>Registered Users</Text>
       </View>
       {renderContent()}
@@ -360,7 +363,7 @@ const RouteScreen = () => {
                 />
               )}
               {/* {liveLocation && ( */}
-                {selectedRoute?.isActive && liveLocation && (
+              {selectedRoute?.isActive && liveLocation && (
                 <Marker
                   coordinate={liveLocation}
                   title="Live Location"
