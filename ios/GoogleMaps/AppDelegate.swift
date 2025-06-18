@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -28,9 +29,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       in: window,
       launchOptions: launchOptions
     )
-
+    showSplashScreen()
+    FirebaseApp.configure()
     return true
   }
+
+
+  private func showSplashScreen() {
+        DispatchQueue.main.async {
+            if let splashClass = NSClassFromString("SplashView") as? NSObject.Type,
+               let splashInstance = splashClass.perform(NSSelectorFromString("sharedInstance"))?.takeUnretainedValue() as? NSObject {
+                splashInstance.perform(NSSelectorFromString("showSplash"))
+            }
+        }
+    }
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
